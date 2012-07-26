@@ -8,12 +8,12 @@
 
 		var methods = {
 			"focus": function(element){
-					if (/iPad|iPhone/.test(navigator.platform)) {
-				        element.click();
-				    }else{
-				    	element.focus();
-				    }
-				    return element;
+				if (/iPad|iPhone/.test(navigator.platform)) {
+			        element.click();
+			    }else{
+			    	element.focus();
+			    }
+			    return element;
 			},
 			"keyup": function(e){
 				var key = e.keyCode,
@@ -28,10 +28,46 @@
 				}else if( key == 39 && position == length && next ){ // Right arrow -> Focus to next input
 					next.caret('pos', 0);
 				}else if( position == maxlength && next ){
-					next.caret('pos', 0);
+					next.caret('pos', next.val().length);
 				}else if( key == 8 && position == 0 && previous ){
 					previous.caret('pos', previous.val().length);
 				};
+				return true;
+			},
+			"getValue": function(){
+				var value = [], length = [];
+				for( var i = 0, l = inputs.length; i < l; i++ ){
+					var input = $(inputs[i]);
+					value.push(input.val());
+					length.push(input.attr('maxlength') - 0);
+				};
+				return {value: value, len: length};
+			},
+			"setValue": function(value){
+				for( var i = 0, l = inputs.length; i < l; i++ ){
+					var input = $(inputs[i]);
+					input.val( value[i] );
+				}
+				return true;
+			},
+			"paste": function( clipboardData, index, pos ){
+				var data = clipboardData.split(''),
+					value = methods.getValue();
+
+				for( var i = index, l = value.value.length; i < l; i++ ){
+					var val = value.value[i],
+						s = ( i == index ? pos : 0),
+						ending = val.substr(s);
+					caret = [i, 0];
+					data = data.concat( ending.split('') );
+					value.value[i] = value.value[i].replace( ending, '' );
+					for( var j = value.len[i] - s; j--; ){
+						value.value[i] += data.splice(0, 1).join('');
+					}
+				}
+
+				methods.setValue(value.value);
+
 				return true;
 			}
 		};
@@ -40,6 +76,7 @@
 		for( var i = 0, l = inputs.length; i < l; i++ ){
 			var input = $(inputs[i]);
 			input.data('group', {
+				index: i,
 				name: input.attr('data-group'), 
 				next: ( i+1 == l ? null : $(inputs[i+1])),
 				previous: ( i-1 >= 0 ? $(inputs[i-1]) : null)
@@ -51,8 +88,8 @@
 			.bind('group-afterpaste', function(e){
 				var tmp = $('#group-clipboard-data');
 				var clipboardData = tmp.val();
-				console.log(clipboardData);
 				tmp.remove();
+				methods.paste( clipboardData, $(this).data('group').index, $(this).caret('pos') );
 				methods.focus(this);
 			})
 			.bind('paste', function(e){
