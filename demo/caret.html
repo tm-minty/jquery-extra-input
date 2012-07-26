@@ -8,12 +8,15 @@
 	<script type="text/javascript">
  		(function($){
 			$(function(){
-				$('#caret-test').caret('pos', 5).bind('click', function(){ console.log($(this).caret('pos')); });
+				$('#button').bind('click', function(){
+					$('#caret-test').caret('pos', 5);
+				});
 			});
 		})(jQuery);
 	</script>
 </head>
 <body>
 	<input type="text" name="caret-test" id="caret-test" size="70" value="Алеаторически выстроенный бесконечный канон с полизеркальной векторно-голосовой структурой">
+	<input type="button" value="Focus" id="button"/>
 </body>
 </html>

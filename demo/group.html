@@ -1,0 +1,23 @@
+<!DOCTYPE HTML>
+<html lang="en-US">
+<head>
+	<meta charset="UTF-8">
+	<title></title>
+	<script type="text/javascript" src="../lib/jquery-1.7.2.min.js"></script>
+	<script type="text/javascript" src="../src/jquery.caret.js"></script>
+	<script type="text/javascript" src="../src/jquery.group.js"></script>
+	<script type="text/javascript">
+		(function($){
+			$(function(){
+				$(':input[data-group="card"]').group();
+			});
+		})(jQuery);
+	</script>
+</head>
+<body>
+	<input type="text" name="card[1]" maxlength="4" data-group="card" size="4">
+	<input type="text" name="card[2]" maxlength="4" data-group="card" size="4">
+	<input type="text" name="card[3]" maxlength="4" data-group="card" size="4">
+	<input type="text" name="card[4]" maxlength="4" data-group="card" size="4">
+</body>
+</html>

@@ -5,11 +5,20 @@
 
 		var methods = {
 			"pos": function(){
+				var focus = function(element){
+					if (/iPad|iPhone/.test(navigator.platform)) {
+				        element.click();
+				    }else{
+				    	element.focus();
+				    }
+				    return element;
+				};
+
 				var args = Array.prototype.slice.call(arguments);
 
 				if( args.length > 0 ){
 					// Set caret position
-					this.focus();
+					focus(this);
 					if( this.createTextRange ){		// Internet Explorer support
 						var range = this.createTextRange();
 						range.move('character', args[0]);
@@ -21,11 +30,11 @@
 				}else{
 					// Get caret position
 					if( document.selection ){	// Internet Explorer support
-						this.focus();
+						focus(this);
 						var range = document.selection.createRange();
 						range.moveStart('character', -this.value.length);
 						return range.text.length;
-					}else if( this.selectionStart || this.selectionStart == '0' ){
+					}else if( this.selectionStart || this.selectionStart == '0' ){ // Other browsers
 						return this.selectionStart;
 					};
 					return 0;
@@ -38,7 +47,7 @@
 			var args = Array.prototype.slice.call(arguments);
 			if( methods[options] ){
 				args.splice(0, 1);
-				if( this.length && this.length > 1 ){
+				if( this.length && this.length > 1 ){ // If selected more than one element, return array with results
 					var result = [];
 					this.each(function(){
 						result.push( methods[options].apply(this, args) );
