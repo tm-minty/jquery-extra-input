@@ -1,0 +1,19 @@
+<!DOCTYPE HTML>
+<html lang="en-US">
+<head>
+	<meta charset="UTF-8">
+	<title></title>
+	<script type="text/javascript" src="../lib/jquery-1.7.2.min.js"></script>
+	<script type="text/javascript" src="../src/jquery.caret.js"></script>
+	<script type="text/javascript">
+ 		(function($){
+			$(function(){
+				$('#caret-test').caret('pos', 5).bind('click', function(){ console.log($(this).caret('pos')); });
+			});
+		})(jQuery);
+	</script>
+</head>
+<body>
+	<input type="text" name="caret-test" id="caret-test" size="70" value="Алеаторически выстроенный бесконечный канон с полизеркальной векторно-голосовой структурой">
+</body>
+</html>
