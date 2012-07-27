@@ -1,24 +1,19 @@
 (function($){
 	if( typeof $ == 'undefined'){ return false; }
 	$.fn.caret = function( options ){
+		if (/iPad|iPhone/.test(navigator.platform)) {
+			return this;
+		};
+
 		var defaults = {};
 
 		var methods = {
 			"pos": function(){
-				var focus = function(element){
-					if (/iPad|iPhone/.test(navigator.platform)) {
-				        element.click();
-				    }else{
-				    	element.focus();
-				    }
-				    return element;
-				};
-
 				var args = Array.prototype.slice.call(arguments);
 
 				if( args.length > 0 ){
 					// Set caret position
-					focus(this);
+					this.focus();
 					if( this.createTextRange ){		// Internet Explorer support
 						var range = this.createTextRange();
 						range.move('character', args[0]);
@@ -30,7 +25,7 @@
 				}else{
 					// Get caret position
 					if( document.selection ){	// Internet Explorer support
-						focus(this);
+						this.focus();
 						var range = document.selection.createRange();
 						range.moveStart('character', -this.value.length);
 						return range.text.length;

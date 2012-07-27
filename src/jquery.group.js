@@ -4,17 +4,13 @@
 
 (function($){
 	$.fn.group = function( options ){
+		if (/iPad|iPhone/.test(navigator.platform)) {
+			return this;
+		};
+
 		var defaults = {};
 
 		var methods = {
-			"focus": function(element){
-				if (/iPad|iPhone/.test(navigator.platform)) {
-			        element.click();
-			    }else{
-			    	element.focus();
-			    }
-			    return element;
-			},
 			"keyup": function(e){
 				var key = e.keyCode,
 					length = $(this).val().length,
@@ -52,7 +48,8 @@
 			},
 			"paste": function( clipboardData, index, pos ){
 				var data = clipboardData.split(''),
-					value = methods.getValue();
+					value = methods.getValue(),
+					caret = [0, 0];
 
 				for( var i = index, l = value.value.length; i < l; i++ ){
 					var val = value.value[i],
@@ -63,10 +60,14 @@
 					value.value[i] = value.value[i].replace( ending, '' );
 					for( var j = value.len[i] - s; j--; ){
 						value.value[i] += data.splice(0, 1).join('');
+						if( data.length > 0)
+							caret[1]++;
 					}
 				}
 
 				methods.setValue(value.value);
+
+				$(inputs[caret[0]]).caret('pos', caret[1] - 1);
 
 				return true;
 			}
@@ -90,13 +91,13 @@
 				var clipboardData = tmp.val();
 				tmp.remove();
 				methods.paste( clipboardData, $(this).data('group').index, $(this).caret('pos') );
-				methods.focus(this);
+				this.focus();
 			})
 			.bind('paste', function(e){
 				var tmp = $('<input type="text" id="group-clipboard-data"/>').css({ position: 'absolute', left: '-9999999px' }),
 					self = $(this);
 				$(document.body).append(tmp);
-				methods.focus(tmp[0]);
+				tmp[0].focus();
 				setTimeout(function(){ self.trigger('group-afterpaste'); }, 0)
 			});	
 
