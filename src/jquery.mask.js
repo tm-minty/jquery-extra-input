@@ -92,10 +92,11 @@
 					}else{
 						$(this).caret('pos', methods.move(1, mask, pos)-1);
 					}
+
 				}else if( e.keyCode == 37 ){ // Arrow left
 					$(this).caret('pos', methods.move(-1, mask, pos));
 				}else if( e.keyCode == 8 ){ // Backspace
-
+					
 				}else if( e.keyCode == 46 ){ // Del
 
 				};
