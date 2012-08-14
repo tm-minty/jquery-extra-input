@@ -235,7 +235,11 @@
 									newValue.push( value[ni] );
 									p = false;
 								}else{
-									ni++;
+									if( ni <= mask.length ){
+										ni++;
+									}else{
+										p = false;
+									}
 								};
 							};
 						}else{
@@ -250,7 +254,7 @@
 			}
 		};
 
-		if( typeof options == 'string' ){
+		if( typeof options == 'string' && typeof methods[options] == 'function'){
 			return methods[options].apply(this, Array.prototype.splice.call(arguments, 1, arguments.length));
 		};
 
@@ -265,7 +269,9 @@
 
 			// Fill default value like mask
 			var value = '', curValue = $(this).val();
-			if(curValue.length > 0){
+			if( curValue == methods.fill( mask, methods.getClearValue( mask, curValue, opts.placeholder ), opts.placeholder ) ){
+				value = curValue;
+			}else if(curValue.length > 0){
 				value = methods.fill( mask, curValue, opts.placeholder );
 			}else{
 				for( var i = 0, l = mask.length; i < l; i++ ){
@@ -276,6 +282,10 @@
 
 			$(this)
 			.bind('keypress', function(e){
+				
+				if( e.keyCode == 0 ){
+					e.keyCode = e.charCode;
+				}
 				if( 
 					e.keyCode >= 48 && e.keyCode <= 57  || // Digits
 					e.keyCode >= 96 && e.keyCode <= 105 || // Numpad
@@ -285,7 +295,7 @@
 					var pos = $(this).caret('pos');
 					methods.keypress.call(this, e.charCode, pos, mask);
 				};
-				return false;
+				//return false;
 			})
 			.bind('keydown', function(e){
 				var value = $(this).val().split(''),
@@ -312,7 +322,7 @@
 					return false;
 				};
 				return true;
-			}).bind('mask-afterpaste', function(e){
+			}).bind('mask-afterpaste afterpaste', function(e){
 				var tmp = $('#mask-clipboard-data'),
 					clipboardData = tmp.val().split(''),
 					pos = $(this).caret('pos');
@@ -323,12 +333,19 @@
 				};
 				//methods.fill( mask, clipboardData, opts.placeholder );
 				this.focus();
-			}).bind('paste', function(e){
-				var tmp = $('<input type="text" id="mask-clipboard-data"/>').css({ position: 'absolute', left: '-9999999px' }),
+			}).bind('paste beforepaste', function(e){
+				var paste = e.clipboardData && e.clipboardData.getData ?
+					        e.clipboardData.getData('text/plain') :                // Standard
+					        window.clipboardData && window.clipboardData.getData ?
+					        window.clipboardData.getData('Text') :                 // MS
+					        false;
+
+				var tmp = $('<input type="text" id="mask-clipboard-data"/>').css({ position: 'absolute', left: '-999999px' }),
 					self = $(this);
 				$(document.body).append(tmp);
-				tmp[0].focus();
-				setTimeout(function(){ self.trigger('mask-afterpaste'); }, 0)
+				tmp.focus();
+				setTimeout(function(){ self.trigger('mask-afterpaste'); }, 0);
+				return true;
 			});	
 		});
 	};
